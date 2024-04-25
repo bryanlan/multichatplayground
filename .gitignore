@@ -1,0 +1,8 @@
+keys.py
+keys.*
+savedChats.json
+*.pyc
+__pycache__/
+.env
+*.log
+  
