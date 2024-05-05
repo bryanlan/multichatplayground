@@ -5,4 +5,5 @@ savedChats.json
 __pycache__/
 .env
 *.log
+directml/
   

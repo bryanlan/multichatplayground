@@ -5,6 +5,7 @@ from langchain_community.chat_models import ChatOllama
 from langchain.prompts.prompt import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
+from mylocalmodels import LocalModelInterface
 
 from langchain.memory import ConversationTokenBufferMemory
 from langchain.chains import ConversationChain
@@ -69,22 +70,27 @@ def chat_bot_backend(conversation, model_name, max_context_tokens=2000, max_outp
                 }
             },
         )
+    elif model_name.startswith("OpenELM"):
+        ENDPOINT_URL = 'https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1'
+        llm = HuggingFaceTextGenInference(
+            inference_server_url=ENDPOINT_URL,
+            max_new_tokens=max_output_tokens,
+            top_k=50,
+            temperature=0.1,
+            repetition_penalty=1.03,
+            server_kwargs={
+                "headers": {
+                    "Authorization": f"Bearer {keys.HUGGINGFACE_API_KEY}",
+                    "Content-Type": "application/json",
+                }
+            },
+        )
     elif model_name.startswith("Ollama:"):
         inModel = remove_prefix(model_name)
         llm = ChatOllama(model=inModel,temperature=temperatureIn )
-        #prompt = ChatPromptTemplate.from_template("Tell me a short joke about {topic}")
-
-        # using LangChain Expressive Language chain syntax
-        # learn more about the LCEL on
-        # /docs/expression_language/why
-        #chain = prompt | llm | StrOutputParser()
-
-        # for brevity, response is printed in terminal
-        # You can use LangServe to deploy your application for
-        # production
-        #print(chain.invoke({"topic": "Space travel"}))
-    
-        
+    elif model_name.startswith("OnnxDML:"):
+        inModel = model_name
+        llm = LocalModelInterface(model_type=inModel,temperature=temperatureIn, max_output_tokens=max_output_tokens )
 
     else:
         raise ValueError(f"Unsupported model: {model_name}")
@@ -128,6 +134,7 @@ if __name__ == "__main__":
     test_model_name = "Mixtral-8x7B-Instruct-v0.1"
     test_model_name = "Ollama: llama3"
     test_model_name = "Ollama: phi"
+    test_model_name = "Mylocal: llmt1"
     test_max_tokens = 2000
 
     # Run the chat bot backend with the test parameters

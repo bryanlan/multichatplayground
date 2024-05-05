@@ -68,5 +68,15 @@ model_specs = {
             "input": 0.000,  # $0.001 per 1k tokens
             "output": 0.000  # $0.002 per 1k tokens
         }
-    }
+    },
+     "OnnxDML: phi3": {
+        "is_local":True,
+        "maximum_context_length_tokens": 2048,
+        "maximum_output_tokens": 2048,
+        "friendly_name":"OnnxDML: phi3",
+        "cost_per_token": {
+            "input": 0.000,  # $0.001 per 1k tokens
+            "output": 0.000  # $0.002 per 1k tokens
+        }
+    },
 }
