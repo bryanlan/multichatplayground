@@ -11,15 +11,94 @@ from langchain.memory import ConversationTokenBufferMemory
 from langchain.chains import ConversationChain
 import keys
 from langchain_community.llms import HuggingFaceTextGenInference
+from gputimekeeper import GPUTimeKeeper
+import concurrent.futures
 
 
-def remove_prefix(text, prefix="Ollama: "):
+
+def remove_prefix(text, prefix="Ollama: "): 
     if text.startswith(prefix):
         return text[len(prefix):]
     return text
 
-def chat_bot_backend(conversation, model_name, max_context_tokens=2000, max_output_tokens = 2000, assistantPrompt = None, temperatureIn = .5):
+def clean_chat_history(chat_history, model_specs):
+    new_chat_history = []
+    for message, response in chat_history:
+        for model_name, specs in model_specs.items():
+            prefix = specs['friendly_name'] + ": "
+            if response.startswith(prefix):
+                response = response[len(prefix):]
+                break
+        new_chat_history.append((message, response))
+    return new_chat_history
 
+
+async def execute_llms(model_names, model_specs, temperature, sys_msg, cleaned_chat_histories):
+    futures = {}
+    first_local_model_handled = False
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for i, model_name in enumerate(model_names):
+            is_local = model_specs[model_name]["is_local"]
+            if not is_local or (is_local and not first_local_model_handled):
+                args = (
+                    cleaned_chat_histories[i],
+                    model_name,
+                    model_specs[model_name]['maximum_context_length_tokens'],
+                    model_specs[model_name]['maximum_output_tokens'],
+                    sys_msg,
+                    temperature
+                )
+                futures[model_name] = executor.submit(chat_bot_backend, *args)
+                if is_local:
+                    first_local_model_handled = True
+
+    results = {model_name: future.result() for model_name, future in futures.items()}
+
+    for i, model_name in enumerate(model_names):
+        if model_specs[model_name]["is_local"] and model_name not in results:
+            args = (
+                cleaned_chat_histories[i],
+                model_name,
+                model_specs[model_name]['maximum_context_length_tokens'],
+                model_specs[model_name]['maximum_output_tokens'],
+                sys_msg,
+                temperature
+            )
+            result = chat_bot_backend(*args)
+            results[model_name] = result
+
+    results_simple = {model_name: results[model_name][0] for model_name in results}
+
+    gpuTimes = {
+        model_specs[model_name]['friendly_name']: results[model_name][1]
+        for model_name in results
+        if model_specs[model_name]["is_local"]
+    }
+    tokens = {
+        model_specs[model_name]['friendly_name']: results[model_name][2]
+        for model_name in results
+        if model_specs[model_name]["is_local"]
+    }
+    tokens_second = {
+        name: round(tokens[name] / (gpuTimes[name] / 1000), 2)
+        for name in tokens
+        if name in gpuTimes and gpuTimes[name] != 0
+    }
+
+    formatted_models = {
+        model_info['friendly_name']: f"{tokens[model_name]} tokens, {gpuTimes[model_name] / 1000:.2f} seconds, {tokens_second[model_name]} tokens/second"
+        for model_name, model_info in model_specs.items()
+        if model_info['is_used'] and model_info['is_local'] and model_info['friendly_name'] in tokens
+    }
+
+    formatted_labels = [f"{key}: {value}" for key, value in formatted_models.items()]
+    formatted_label_str = "\n".join(formatted_labels)
+
+    return results_simple, formatted_label_str
+
+def chat_bot_backend(conversation, model_name, max_context_tokens=2000, max_output_tokens = 2000, assistantPrompt = None, temperatureIn = .5):
+    GPU_UTILIZATION_THRESHOLD = .8
     # Define the base template. Notice {systemPrompt} is part of the template.
     base_template = """{systemPrompt}
     Current conversation:
@@ -112,10 +191,18 @@ def chat_bot_backend(conversation, model_name, max_context_tokens=2000, max_outp
     # Initialize the conversation chain
     conversation_chain = ConversationChain(prompt = PROMPT, llm=llm, memory=memory, verbose = True)
 
+    # start tje g[]
     # Generate the agent's response
+    aGPUTime =  GPUTimeKeeper()
+    aGPUTime.start_timer(GPU_UTILIZATION_THRESHOLD)
     agent_response = conversation_chain.predict(input=latest_user_input)
+    gpuTime = aGPUTime.stop_timer()
+    tokenCount = llm.get_num_tokens(agent_response)
 
-    return agent_response
+
+
+
+    return agent_response, gpuTime, tokenCount
 
 if __name__ == "__main__":
     # Define a test conversation

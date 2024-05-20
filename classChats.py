@@ -1,8 +1,10 @@
 import os
 import json
-import concurrent.futures
-from llminvoker import chat_bot_backend  # Assuming this is where the chat_bot_backend function is defined
+
+from llminvoker import clean_chat_history  
+from evalagent import LangChainAgent
 import gradio as gr
+import asyncio
 
 class BaseBox:
     def __init__(self, full_path,  dropdown, clear_button, save_button, remove_button, json_object, full_json_object, name_text_box):
@@ -122,7 +124,7 @@ class TextBox(BaseBox):
         return text, name
 
 class ChatBot(BaseBox):
-    def __init__(self,  primary_chatbot, secondary_chatbots, model_specs, model_choice, temp_slider,msg, sys_msg_text, *args, **kwargs):
+    def __init__(self,  primary_chatbot, secondary_chatbots, model_specs, model_choice, temp_slider,perf_label, msg, sys_msg_text, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.primary_chatbot = primary_chatbot
         self.secondary_chatbots = secondary_chatbots
@@ -132,11 +134,12 @@ class ChatBot(BaseBox):
         self.sys_msg_text = sys_msg_text
         self.message_selected = gr.State(None)
         self.msg = msg
+        self.perf_label = perf_label
 
     
        
     def initialize(self, full_path=None, dropdown=None, clear_button=None, save_button=None, remove_button=None, json_object=None, full_json_object = None, name_text_box = None,
-                   primary_chatbot = None, secondary_chatbots = None, model_specs = None, model_choice = None, temp_slider = None, msg = None):
+                   primary_chatbot = None, secondary_chatbots = None, model_specs = None, model_choice = None, temp_slider = None, perf_label  = None, msg = None):
         super().initialize(full_path, dropdown, clear_button, save_button, remove_button,  json_object, full_json_object, name_text_box)
         
         self.primary_chatbot = primary_chatbot or self.primary_chatbot
@@ -145,6 +148,7 @@ class ChatBot(BaseBox):
         self.model_choice = model_choice or self.model_choice
         self.temp_slider = temp_slider or self.temp_slider
         self.msg = msg or self.msg
+        self.perf_label = perf_label or self.perf_label
  
         if "ActiveThread" not in self.json_object:
             self.json_object['ActiveThread'] = 'default'
@@ -156,8 +160,8 @@ class ChatBot(BaseBox):
         self.remove_button.click(self._remove_text, [self.name_text_box], [self.dropdown,self.name_text_box, self.primary_chatbot, *self.secondary_chatbots])
 
         self.dropdown.change(self.load_text, [self.dropdown], [self.name_text_box, self.primary_chatbot, *self.secondary_chatbots])
-        self.msg.submit(self._respond,[self.msg, self.primary_chatbot, self.message_selected, self.model_choice, self.temp_slider, *self.secondary_chatbots],
-                        [self.msg, self.primary_chatbot, self.message_selected, *self.secondary_chatbots])
+        self.msg.submit(self._respond,[self.msg, self.primary_chatbot, self.message_selected, self.model_choice, self.temp_slider, self.perf_label,*self.secondary_chatbots],
+                        [self.msg, self.primary_chatbot, self.message_selected,self.perf_label, *self.secondary_chatbots])
 
         self.primary_chatbot.select(self._save_selected_message, None, [self.msg, self.message_selected])
   
@@ -265,89 +269,50 @@ class ChatBot(BaseBox):
         return msg.value, msg.value
 
     
+    
 
+   
+ 
 
-    def _respond(self, message, chat_history, message_selected, model_names, temp_slider, *model_chatbots):
-        def clean_chat_history(chat_history):
-            new_chat_history = []
-            for message, response in chat_history:
-                for model_name, specs in self.model_specs.items():
-                    prefix = specs['friendly_name'] + ": "
-                    if response.startswith(prefix):
-                        response = response[len(prefix):]
-                        break
-                new_chat_history.append((message, response))
-            return new_chat_history
-
+    def _respond(self, message, chat_history, message_selected, model_names, temp_slider, perf_label, *model_chatbots):
         if message_selected is None:
             chat_history.append((message, ""))
             for model_chatbot in model_chatbots:
                 model_chatbot.append((message, ""))
 
-            new_chat_history = clean_chat_history(chat_history)
-            new_model_chatbots = [clean_chat_history(model_chatbot) for model_chatbot in model_chatbots]
-
-            first_spec_model_name = list(self.model_specs)[0]
+            new_chat_history = clean_chat_history(chat_history, self.model_specs)
+            new_model_chatbots = [clean_chat_history(model_chatbot, self.model_specs) for model_chatbot in model_chatbots]
 
             if not model_names:
-                model_names = [first_spec_model_name]
+                model_names = [list(self.model_specs)[0]]
+            
+            user_input = message
 
-            if first_spec_model_name in model_names:
-                first_model = first_spec_model_name
-            else:
-                first_model = model_names[0]
-            print("Model names list:", model_names)
-            futures = {}
-            first_local_model_handled = False
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                # Handle concurrent execution for non-local and the first local model
-                for i, model_name in enumerate(model_names):
-                    is_local = self.model_specs[model_name]["is_local"] 
-                    if not is_local or (is_local and not first_local_model_handled):
-                        args = (
-                            new_chat_history if i == 0 else new_model_chatbots[i-1],
-                            model_name,
-                            self.model_specs[model_name]['maximum_context_length_tokens'],
-                            self.model_specs[model_name]['maximum_output_tokens'],
-                            "System: " + self.sys_msg_text,
-                            temp_slider
-                        )
-                        print(f"Submitting command for model: {model_name}")
-                        futures[model_name] = executor.submit(chat_bot_backend, *args)
-                        if is_local:
-                            first_local_model_handled = True
-
-            # Wait for all concurrent tasks to complete before handling the rest of the local models
-            results = {model_name: future.result() for model_name, future in futures.items()}
-
-            # Handle remaining local models sequentially
-            for i, model_name in enumerate(model_names):
-                if self.model_specs[model_name]["is_local"] and model_name not in results:
-                    args = (
-                        new_chat_history if i == 0 else new_model_chatbots[i-1],
-                        model_name,
-                        self.model_specs[model_name]['maximum_context_length_tokens'],
-                        self.model_specs[model_name]['maximum_output_tokens'],
-                        "System: " + self.sys_msg_text,
-                        temp_slider
-                    )
-                    print ("submitting command")
-                    result = chat_bot_backend(*args)
-                    results[model_name] = result
-
+              # Instantiate LangChainAgent and call run_agent_and_llms
+            agent = LangChainAgent()
+            results, formatted_label_str = asyncio.run(agent.run_agent_and_llms(
+                model_names,
+                self.model_specs,
+                temp_slider,
+                "System: " + self.sys_msg_text,
+                [new_chat_history] + new_model_chatbots,
+                user_input
+            ))
+            first_model = model_names[0]
             chat_history[-1] = (chat_history[-1][0], self.model_specs[first_model]['friendly_name'] + ": " + results[first_model])
 
-            for i, model_spec_key in enumerate(list(self.model_specs.keys())[1:], start=1):
-                friendly_name = self.model_specs[model_spec_key]['friendly_name']
-                if model_spec_key in results:
-                    model_chatbots[i-1][-1] = (model_chatbots[i-1][-1][0], friendly_name + ": " + results[model_spec_key])
-                else:
-                    model_chatbots[i-1][-1] = (model_chatbots[i-1][-1][0], self.model_specs[first_model]['friendly_name'] + ": " + results[first_model])
+            for i, model_spec_key in enumerate(list(self.model_specs.keys())[0:], start=0):
+                if self.model_specs[model_spec_key]['is_used']:
+                    friendly_name = self.model_specs[model_spec_key]['friendly_name']
+                    if model_spec_key in results:
+                        model_chatbots[i][-1] = (model_chatbots[i][-1][0], friendly_name + ": " + results[model_spec_key])
+                    else:
+                        model_chatbots[i][-1] = (model_chatbots[i][-1][0], self.model_specs[first_model]['friendly_name'] + ": " + results[first_model])
 
-            return "", chat_history, message_selected, *model_chatbots
+            return "", chat_history, message_selected, formatted_label_str, *model_chatbots
         else:
             for i, (msg_index, msg_text) in enumerate(chat_history):
-                iDelta = len(chat_history) - len(model_chatbots [0])
+                iDelta = len(chat_history) - len(model_chatbots[0])
                 if msg_index == message_selected or msg_text == message_selected:
                     if message:
                         chat_history[i] = (msg_index, message)
@@ -359,4 +324,4 @@ class ChatBot(BaseBox):
                             model_chatbot.pop(i-iDelta)
                     break
             message_selected = None
-            return "", chat_history, message_selected, *model_chatbots
+            return "", chat_history, message_selected, perf_label, *model_chatbots

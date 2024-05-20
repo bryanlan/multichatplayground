@@ -1,16 +1,25 @@
 import gradio as gr
-import random
-import time
 from modelindex import model_specs
-from llminvoker import chat_bot_backend
 from classChats import TextBox, ChatBot
 
 
 with gr.Blocks() as demo:
-    with gr.Row():
-        
+    with gr.Row():        
         with gr.TabItem("Workspace"):
             with gr.Row():
+                with gr.Column():
+                    filtered_models = {
+                        model_info['friendly_name']: "n/a tokens/second" 
+                        for model_name, model_info in model_specs.items() 
+                        if model_info['is_used'] and model_info['is_local']}
+                    formatted_labels = [f"{key}: {value}" for key, value in filtered_models.items()]
+                    formatted_label_str = "\n".join(formatted_labels)
+                    
+                    perfLabel = gr.Textbox(
+                        label="Performance",
+                        value=formatted_label_str,
+                        interactive=False
+                    )
                 with gr.Column(scale=4):
                     activeThread = gr.Textbox(label="Active Chat", value="default")
                     model_choice = gr.Dropdown(list(model_specs.keys()), label="Select Model", multiselect=True, value= next(iter(model_specs)))
@@ -25,18 +34,19 @@ with gr.Blocks() as demo:
     
         model_chatbots = []
 
-        for i in range(1, len(list(model_specs.keys()))):
-            with gr.TabItem(model_specs[list(model_specs.keys())[i]]["friendly_name"]):
-                with gr.Row():
-                    model_chatbot = gr.Chatbot(label=f"{model_specs[list(model_specs.keys())[i]]['friendly_name']} Conversation")
-                    model_chatbots.append(model_chatbot)
+        for model_name, model_info in model_specs.items():
+            if model_info['is_used']:
+                with gr.TabItem(model_info['friendly_name']):
+                    with gr.Row():
+                        model_chatbot = gr.Chatbot(label=f"{model_info['friendly_name']} Conversation")
+                        model_chatbots.append(model_chatbot)
 
     # Event handlers
 
     ThreadText = ChatBot(full_path = "savedChats.json", json_object = {},full_json_object = {}, name_text_box=activeThread,
                          dropdown = thread_choice, clear_button= clear_chat, save_button = save_button, remove_button = remove_button,
                          primary_chatbot=chatbot,secondary_chatbots=model_chatbots, model_specs = model_specs, model_choice=model_choice, 
-                         temp_slider=temp_slider, msg = msg,sys_msg_text= "System: You are a helpful assistant")
+                         temp_slider=temp_slider,perf_label=perfLabel, msg = msg,sys_msg_text= "System: You are a helpful assistant")
     ThreadText.bind_event_handlers()
     ThreadText.initialize()
 

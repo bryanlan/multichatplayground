@@ -6,4 +6,8 @@ __pycache__/
 .env
 *.log
 directml/
-  
+wmitest.py
+agentsample.py
+agentparsing.py
+evalchainsample.py
+boneyard.py
