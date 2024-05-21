@@ -6,11 +6,12 @@ from langchain.schema import LLMResult
 from llminvoker import execute_llms, clean_chat_history
 import keys
 from typing import Any, Dict, List
-import concurrent.futures
-import threading
 import asyncio
+import nest_asyncio
 import copy
 
+# Apply nest_asyncio to allow nested event loops
+nest_asyncio.apply()
 class CustomHandler(BaseCallbackHandler):
     def on_llm_start(self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any) -> None:
         print(f"CallbackPrompt: {prompts}")
@@ -20,32 +21,26 @@ class CustomHandler(BaseCallbackHandler):
         print("---")
 
 custom_handler = CustomHandler()
-# have to define some tools and globals outside of the class because of langchain limitations
+
 tool_used = False
-llm_thread = None
-llm_stop_event = threading.Event()
-thread_completed = threading.Event()
 llm_results = None
 formatted_label_str = ""
 modelInfo = {}
 
 async def grade_multiple_llms_response_single_async(prompt: str, evalCriteria: str) -> dict:
     global tool_used, modelInfo, llm_results
-    #if evalCriteria:
-    #    eCriteria = evalCriteria
-    #else:
-    #    eCriteria = " a scale of 1 to 10."
-    formatted_chatHistory = [[(prompt,"")] for model_name in modelInfo['model_names']]
 
-    cancel_llm_futures()
+    formatted_chatHistory = [[(prompt,"")] for model_name in modelInfo['model_names']]
    
     # execute the question on all LLMs
     llm_results, formatted_label_str = await execute_llms(
                 modelInfo['model_names'], modelInfo['model_specs'], modelInfo['temperature'], "You are a helpful assistant", formatted_chatHistory)
+
     llm_response = copy.deepcopy(llm_results)
-    #llm_response['Next Step'] = "Now AI should evaluate previous responses according to " + eCriteria
     tool_used = True
     return llm_response
+
+
 
 @tool
 def grade_multiple_llms_response_multiple(prompt: str, numberEval: int, evalCriteria: str) -> dict:
@@ -53,7 +48,6 @@ def grade_multiple_llms_response_multiple(prompt: str, numberEval: int, evalCrit
     '''ONLY use when asked to evaluate multiple LLMs reponses to a question multiple times (must be a specific number >1 ) by nested looping through the responses and grading them. Inputs: 1) prompt: str - the question to evaluate 
     2) numberEval: int - the number of times to ask the question to multiple LLMs, cannot be 1 3) evalCritera: optional str the criteria defined for the evaluation, if specified. 
     Outputs: 1) Dictionary containing keys for each LLM with each key having a value consisting of a list of evaluation scores'''
-    cancel_llm_futures()
     global tool_used
     tool_used = True
     llmResponses = []
@@ -68,27 +62,14 @@ def grade_multiple_llms_response_single(prompt: str, evalCriteria: str) -> dict:
     evalCritera: optional str the criteria defined for the evaluation, if specified. 
     Outputs: 1) evalInfo: dict - keys are llm model names, value are responses which AI will then grade according to evalCriteria input parameter'''
 
-    # wrap the async function that does the work
-    return asyncio.run(grade_multiple_llms_response_single_async(prompt, evalCriteria))
-
-
-
-
-
-def cancel_llm_futures():
-    global llm_stop_event
-    global llm_thread
-
-    llm_stop_event.set()
-    if llm_thread:
-       llm_thread.join()
+    loop = asyncio.get_event_loop()
+    return loop.run_until_complete(grade_multiple_llms_response_single_async(prompt, evalCriteria))
 
 
 class LangChainAgent:
     def __init__(self):
         self.custom_handler = CustomHandler()
         self.tools = [
-            #get_multiple_llms_response_single,
             grade_multiple_llms_response_multiple,
             grade_multiple_llms_response_single
         ]
@@ -156,28 +137,6 @@ class LangChainAgent:
         result = self.agent_executor.invoke({"input": user_input})
         return result
     
-    
-    async def execute_llms_wrapper(self, model_names, model_specs, temperature, sys_msg, cleaned_chat_histories):
-        global llm_stop_event, thread_completed, llm_results, formatted_label_str
-
-        llm_stop_event.clear()
-        thread_completed.clear()
-        
-        llm_results, formatted_label_str = await execute_llms(
-            model_names, model_specs, temperature, sys_msg, cleaned_chat_histories
-        )
-        thread_completed.set()
-
-
-
-    def start_execute_llms(self, model_names, model_specs, temperature, sys_msg, cleaned_chat_histories):
-        global llm_thread
-        llm_thread = threading.Thread(
-            target=asyncio.run,  # Use asyncio.run to run the coroutine in a new thread
-            args=(self.execute_llms_wrapper(model_names, model_specs, temperature, sys_msg, cleaned_chat_histories),)
-        )
-        llm_thread.start()
-
     def concatenate_dict_pairs(self, d, result=None):
         if result is None:
             result = []
@@ -197,53 +156,27 @@ class LangChainAgent:
         return ''.join(result).strip()  # Join and strip the trailing newline
 
     async def run_agent_and_llms(self, model_names, model_specs, temperature, sys_msg, cleaned_chat_histories, user_input):
-        global tool_used, llm_thread, llm_results, formatted_label_str, thread_completed, modelInfo
+        global tool_used, llm_results, formatted_label_str, modelInfo
         first_model = model_names[0]
-        # assign all revelant model info to the global so that the langchain tools can use it (since they won't work under a class defn)
         modelInfo = {'model_names':model_names, 'model_specs':model_specs, 'temperature': temperature, 'sys_msg':sys_msg}
-        if model_specs[first_model]["is_local"]:
-            # If the first model is local, run execute_llms directly and return the results
-            results, formatted_label_str = await execute_llms(
-                model_names, model_specs, temperature, sys_msg, cleaned_chat_histories
-            )
-            return results, formatted_label_str
-
-
-        # If the first model is not local, run the agent and execute_llms in parallel
         
         tool_used = False
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            agent_future = executor.submit(self.invoke, user_input)
-            self.start_execute_llms(
-                model_names, model_specs, temperature, sys_msg, cleaned_chat_histories
-            )
-
-            agent_result = agent_future.result()
-            if tool_used:
-                if thread_completed.is_set():
-                    print("Thread of initial llm execution completed normally.")
-                else:
-                    print("Thread of initial llm execution was preempted and halted by tools invocation.")
-                # pad the results so that the actual responses will show up for their respective LLMs, and the eval will show for the main LLM.
-                results_simple = {model_name: llm_results[model_name] +  ("\n\n Evaluations of Multiple LLMs: \n\n" + self.concatenate_dict_pairs(agent_result['output']) if model_name == first_model else '') for model_name in model_names}
-
-                return results_simple, ""
-
-            if llm_thread:
-                llm_thread.join()          
-            if thread_completed.is_set():
-                print("Thread of initial llm execution completed normally.")
-            else:
-                print("Thread of initial llm execution was preempted and halted by tools invocation.")
-      
-        return llm_results, formatted_label_str
-
+        agent_result = self.invoke(user_input)
         
-    
+        if tool_used:
+            # pad the results so that the actual responses will show up for their respective LLMs, and the eval will show for the main LLM.
+            results_simple = {model_name: llm_results[model_name] +  ("\n\n Evaluations of Multiple LLMs: \n\n" + self.concatenate_dict_pairs(agent_result['output']) if model_name == first_model else '') for model_name in model_names}
+            return results_simple, ""
+
+        # If the agent did not use any tools, run execute_llms
+        llm_results, formatted_label_str = await execute_llms(
+            model_names, model_specs, temperature, sys_msg, cleaned_chat_histories
+        )
+        return llm_results, formatted_label_str
+        
 if __name__ == "__main__":
     agent = LangChainAgent()
     user_input = "Evaluate the different llms to see how they handle this question: How is a duck like quantum mechanics?"
-    #user_input = "How is a duck like quantum mechanics?"
     result = agent.invoke(user_input)
     print(result)

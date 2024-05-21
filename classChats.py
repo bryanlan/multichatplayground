@@ -195,7 +195,7 @@ class ChatBot(BaseBox):
     def _save_text(self, chat_history, thread_name, *model_chatbots): 
  
 
-        chat_histories = [chat_history] + list(model_chatbots)
+        chat_histories = list(model_chatbots)
         model_names = []
         # Populate model_names based on the order of models defined in model_specs
         for key in self.model_specs:
@@ -258,6 +258,11 @@ class ChatBot(BaseBox):
                     break
             else:  # If the model wasn't found, append an empty history
                 ordered_chat_histories.append([])
+
+        # Append the first chat history twice to account for workspace being the same as the first model.
+        if ordered_chat_histories:
+            ordered_chat_histories.insert(0, ordered_chat_histories[0])
+
       
      
         # Return the ordered chat histories along with other thread information
