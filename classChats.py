@@ -10,16 +10,32 @@ class BaseBox:
     def __init__(self, full_path,  dropdown, clear_button, save_button, remove_button, json_object, full_json_object, name_text_box):
         # json object is a dictionary, possibly nested, where keys Threads, Phases, ActivePhase, and ActiveThread can be added
         # full json object is the full file that needs to be written.
-        self.full_path = full_path       
+          # Load the full_json_object from the file if it is empty
+          # if there is no full_json object previously loaded, load one up.
+        if not full_json_object:  # Check if the dictionary is empty
+            try:
+                with open(full_path, 'r') as file:
+                    full_json_object = json.load(file)
+            except FileNotFoundError:
+                print(f"File not found: {full_path}")
+                full_json_object = {}
+            except json.JSONDecodeError:
+                print(f"Error decoding JSON from the file: {full_path}")
+                full_json_object = {}
+
+        self.full_path = full_path
         self.dropdown = dropdown
         self.clear_button = clear_button
         self.save_button = save_button
         self.remove_button = remove_button
-        
+
         self.json_object = json_object
         self.full_json_object = full_json_object
         self.name_text_box = name_text_box
-       
+
+        # Set self.json_object to full_json_object if it was previously empty
+        if not self.json_object:
+            self.json_object = self.full_json_object
        
 
        
@@ -155,7 +171,7 @@ class ChatBot(BaseBox):
 
     def bind_event_handlers(self):
         
-        self.clear_button.click(self._clear_text, [*self.secondary_chatbots], [self.primary_chatbot, *self.secondary_chatbots])
+        self.clear_button.click(self._clear_text, [*self.secondary_chatbots], [self.dropdown,self.primary_chatbot, *self.secondary_chatbots])
         self.save_button.click(self._save_text, [self.primary_chatbot, self.name_text_box, *self.secondary_chatbots], [self.name_text_box, self.dropdown])
         self.remove_button.click(self._remove_text, [self.name_text_box], [self.dropdown,self.name_text_box, self.primary_chatbot, *self.secondary_chatbots])
 
@@ -190,7 +206,8 @@ class ChatBot(BaseBox):
 
     def _clear_text(self, *model_chatbots):
         empty_histories = [[] for _ in range(len(model_chatbots) +1)]
-        return empty_histories
+        choices_update = gr.update(choices=self.get_dropdown_choices())
+        return choices_update,*empty_histories
     
     def _save_text(self, chat_history, thread_name, *model_chatbots): 
  

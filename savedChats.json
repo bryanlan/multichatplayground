@@ -1,1 +1,206 @@
-{}
+{
+    "ActiveThread": "DiracSingleQuestion",
+    "Threads": {
+        "default": {},
+        "savetest1": {
+            "GPT4o": [
+                [
+                    "what is 2+2?",
+                    "Ollama: phi3: The answer to 2 + 2 is 4.\n\nExplanation: This basic arithmetic operation results in the sum of two numbers, which in this case are both equal to 2, giving us a total of 4."
+                ]
+            ],
+            "Claude": [
+                [
+                    "what is 2+2?",
+                    "Ollama: phi3: The answer to 2 + 2 is 4.\n\nExplanation: This basic arithmetic operation results in the sum of two numbers, which in this case are both equal to 2, giving us a total of 4."
+                ]
+            ],
+            "Gemini": [
+                [
+                    "what is 2+2?",
+                    "Ollama: phi3: The answer to 2 + 2 is 4.\n\nExplanation: This basic arithmetic operation results in the sum of two numbers, which in this case are both equal to 2, giving us a total of 4."
+                ]
+            ],
+            "Mixtral": [
+                [
+                    "what is 2+2?",
+                    "Ollama: phi3: The answer to 2 + 2 is 4.\n\nExplanation: This basic arithmetic operation results in the sum of two numbers, which in this case are both equal to 2, giving us a total of 4."
+                ]
+            ],
+            "Ollama: llama3": [
+                [
+                    "what is 2+2?",
+                    "Ollama: phi3: The answer to 2 + 2 is 4.\n\nExplanation: This basic arithmetic operation results in the sum of two numbers, which in this case are both equal to 2, giving us a total of 4."
+                ]
+            ],
+            "Ollama: phi": [
+                [
+                    "what is 2+2?",
+                    "Ollama: phi3: The answer to 2 + 2 is 4.\n\nExplanation: This basic arithmetic operation results in the sum of two numbers, which in this case are both equal to 2, giving us a total of 4."
+                ]
+            ],
+            "Ollama: phi3": [
+                [
+                    "what is 2+2?",
+                    "Ollama: phi3: The answer to 2 + 2 is 4.\n\nExplanation: This basic arithmetic operation results in the sum of two numbers, which in this case are both equal to 2, giving us a total of 4."
+                ]
+            ],
+            "OnnxDML: phi3": [
+                [
+                    "what is 2+2?",
+                    "Ollama: phi3: The answer to 2 + 2 is 4.\n\nExplanation: This basic arithmetic operation results in the sum of two numbers, which in this case are both equal to 2, giving us a total of 4."
+                ]
+            ]
+        },
+        "DiracSingleQuestion": {
+            "GPT4o": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning.",
+                    "GPT4o: Paul Dirac's observation captures an interesting contrast between the objectives of science and poetry. In science, the goal is to communicate new knowledge clearly and unambiguously, ensuring it can be understood and verified by others. This is essential for the advancement of scientific understanding and progress.\n\nOn the other hand, poetry often aims to express complex emotions, experiences, and ideas in a way that can be open to interpretation. It uses language creatively to evoke personal responses and can resonate differently with each reader. Poetry's beauty often lies in its ambiguity and the multiple layers of meaning it can convey.\n\nWhether one agrees with Dirac's statement may depend on their perspective on communication and the purposes of these different fields. Both science and poetry enrich human experience, but they do so in distinct ways that reflect their unique goals and methods.\n\n Evaluations of Multiple LLMs: \n\nBased on the evaluation, the scores for the responses to the question 'Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?' are as follows:\n\n1. **gpt-4o**: 90 - Highly relevant, deep analysis, coherent, engaging, and original.\n2. **llama3**: 80 - Relevant, good explanation, coherent, engaging, but less original.\n3. **phi3 (Ollama)**: 75 - Relevant, adds some depth, coherent, fairly engaging, and brings in the idea of universality.\n4. **phi3 (OnnxDML)**: 60 - Relevant but surface-level, lacks depth, coherent but brief, less engaging, and minimal originality."
+                ]
+            ],
+            "Claude": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning.",
+                    "GPT4o: Paul Dirac's observation captures an interesting contrast between the objectives of science and poetry. In science, the goal is to communicate new knowledge clearly and unambiguously, ensuring it can be understood and verified by others. This is essential for the advancement of scientific understanding and progress.\n\nOn the other hand, poetry often aims to express complex emotions, experiences, and ideas in a way that can be open to interpretation. It uses language creatively to evoke personal responses and can resonate differently with each reader. Poetry's beauty often lies in its ambiguity and the multiple layers of meaning it can convey.\n\nWhether one agrees with Dirac's statement may depend on their perspective on communication and the purposes of these different fields. Both science and poetry enrich human experience, but they do so in distinct ways that reflect their unique goals and methods.\n\n Evaluations of Multiple LLMs: \n\nBased on the evaluation, the scores for the responses to the question 'Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?' are as follows:\n\n1. **gpt-4o**: 90 - Highly relevant, deep analysis, coherent, engaging, and original.\n2. **llama3**: 80 - Relevant, good explanation, coherent, engaging, but less original.\n3. **phi3 (Ollama)**: 75 - Relevant, adds some depth, coherent, fairly engaging, and brings in the idea of universality.\n4. **phi3 (OnnxDML)**: 60 - Relevant but surface-level, lacks depth, coherent but brief, less engaging, and minimal originality."
+                ]
+            ],
+            "Gemini": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning.",
+                    "GPT4o: Paul Dirac's observation captures an interesting contrast between the objectives of science and poetry. In science, the goal is to communicate new knowledge clearly and unambiguously, ensuring it can be understood and verified by others. This is essential for the advancement of scientific understanding and progress.\n\nOn the other hand, poetry often aims to express complex emotions, experiences, and ideas in a way that can be open to interpretation. It uses language creatively to evoke personal responses and can resonate differently with each reader. Poetry's beauty often lies in its ambiguity and the multiple layers of meaning it can convey.\n\nWhether one agrees with Dirac's statement may depend on their perspective on communication and the purposes of these different fields. Both science and poetry enrich human experience, but they do so in distinct ways that reflect their unique goals and methods.\n\n Evaluations of Multiple LLMs: \n\nBased on the evaluation, the scores for the responses to the question 'Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?' are as follows:\n\n1. **gpt-4o**: 90 - Highly relevant, deep analysis, coherent, engaging, and original.\n2. **llama3**: 80 - Relevant, good explanation, coherent, engaging, but less original.\n3. **phi3 (Ollama)**: 75 - Relevant, adds some depth, coherent, fairly engaging, and brings in the idea of universality.\n4. **phi3 (OnnxDML)**: 60 - Relevant but surface-level, lacks depth, coherent but brief, less engaging, and minimal originality."
+                ]
+            ],
+            "Mixtral": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning.",
+                    "GPT4o: Paul Dirac's observation captures an interesting contrast between the objectives of science and poetry. In science, the goal is to communicate new knowledge clearly and unambiguously, ensuring it can be understood and verified by others. This is essential for the advancement of scientific understanding and progress.\n\nOn the other hand, poetry often aims to express complex emotions, experiences, and ideas in a way that can be open to interpretation. It uses language creatively to evoke personal responses and can resonate differently with each reader. Poetry's beauty often lies in its ambiguity and the multiple layers of meaning it can convey.\n\nWhether one agrees with Dirac's statement may depend on their perspective on communication and the purposes of these different fields. Both science and poetry enrich human experience, but they do so in distinct ways that reflect their unique goals and methods.\n\n Evaluations of Multiple LLMs: \n\nBased on the evaluation, the scores for the responses to the question 'Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?' are as follows:\n\n1. **gpt-4o**: 90 - Highly relevant, deep analysis, coherent, engaging, and original.\n2. **llama3**: 80 - Relevant, good explanation, coherent, engaging, but less original.\n3. **phi3 (Ollama)**: 75 - Relevant, adds some depth, coherent, fairly engaging, and brings in the idea of universality.\n4. **phi3 (OnnxDML)**: 60 - Relevant but surface-level, lacks depth, coherent but brief, less engaging, and minimal originality."
+                ]
+            ],
+            "Ollama: llama3": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning.",
+                    "Ollama: llama3: What a fascinating quote from Paul Dirac! I think he's highlighting the fundamental differences between scientific communication and poetic expression.\n\nWhile science aims to convey complex ideas in a clear, accessible manner, poetry often seeks to evoke emotions, spark imagination, and create new connections between seemingly disparate concepts. In poetry, ambiguity and subtlety can be just as valuable as clarity, allowing readers to bring their own meanings and interpretations to the text.\n\nIn that sense, I agree with Dirac's assertion that in poetry, it's not about conveying something entirely new, but rather about presenting familiar ideas in a way that resonates deeply with the reader. Poetry can be a powerful tool for exploring complex emotions, experiences, and perspectives, often by embracing ambiguity and uncertainty.\n\nWhat are your thoughts on this? Do you think there's value in blending scientific precision with poetic license to create something entirely new?"
+                ]
+            ],
+            "Ollama: phi": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning.",
+                    "GPT4o: Paul Dirac's observation captures an interesting contrast between the objectives of science and poetry. In science, the goal is to communicate new knowledge clearly and unambiguously, ensuring it can be understood and verified by others. This is essential for the advancement of scientific understanding and progress.\n\nOn the other hand, poetry often aims to express complex emotions, experiences, and ideas in a way that can be open to interpretation. It uses language creatively to evoke personal responses and can resonate differently with each reader. Poetry's beauty often lies in its ambiguity and the multiple layers of meaning it can convey.\n\nWhether one agrees with Dirac's statement may depend on their perspective on communication and the purposes of these different fields. Both science and poetry enrich human experience, but they do so in distinct ways that reflect their unique goals and methods.\n\n Evaluations of Multiple LLMs: \n\nBased on the evaluation, the scores for the responses to the question 'Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?' are as follows:\n\n1. **gpt-4o**: 90 - Highly relevant, deep analysis, coherent, engaging, and original.\n2. **llama3**: 80 - Relevant, good explanation, coherent, engaging, but less original.\n3. **phi3 (Ollama)**: 75 - Relevant, adds some depth, coherent, fairly engaging, and brings in the idea of universality.\n4. **phi3 (OnnxDML)**: 60 - Relevant but surface-level, lacks depth, coherent but brief, less engaging, and minimal originality."
+                ]
+            ],
+            "Ollama: phi3": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning.",
+                    "Ollama: phi3: As an AI, I don't have personal opinions, but I can provide analysis based on existing perspectives. You raise a thought-provoking point about science and poetry. Scientists like Paul Dirac aim to communicate complex ideas in accessible terms so that they are understood by a broad audience, which aligns with the goal of education and knowledge dissemination. On the other hand, poetry often uses metaphorical language and subjective experiences, making it more open to interpretation rather than direct comprehension. This contrast could be seen as reflecting different approaches in human communication: clarity versus ambiguity.\n\nHowever, some poets do strive for universality by sharing universal themes or emotions that resonate with people across cultures and time periods. Similarly, there are scientists who write popular science books aimed at a general audience to make scientific concepts more approachable. The dichotomy you've identified showcases the diversity in communication styles within these fields.\n\nUltimately, it depends on individual preferences whether one finds poetry or straightforward communication more effective for their understanding and appreciation of complex ideas."
+                ]
+            ],
+            "OnnxDML: phi3": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning.",
+                    "OnnxDML: phi3:  I agree with your perspective. In science, the goal is to communicate complex ideas in a way that everyone can understand. However, in poetry, the objective can be quite different, often focusing on evoking emotions, exploring abstract concepts, or presenting a unique perspective."
+                ]
+            ]
+        },
+        "direcmulti3pass": {
+            "GPT4o": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning. Iterate through answers 3 times and give average score per llm.",
+                    "GPT4o: Paul Dirac's statement highlights the contrasting nature of science and poetry in terms of communication and discovery. In science, the goal is to share new knowledge clearly and universally, ensuring that complex ideas are accessible to everyone. This is crucial for the advancement of scientific understanding and for building upon previous discoveries.\n\nIn poetry, however, the aim is often to evoke emotions, provoke thought, and convey experiences in a way that may be open to interpretation and personal reflection. Poets might use ambiguous language, metaphors, and other literary devices to create a sense of mystery or to leave room for individual interpretation. This can lead to a richer, more personal engagement with the text.\n\nSo, whether one agrees with Dirac's observation might depend on their perspective on the purposes of science and poetry. Some might appreciate the clarity and universality of scientific communication, while others might value the subjective and interpretive nature of poetry. Both have their own unique ways of enriching human understanding and experience.\n\n Evaluations of Multiple LLMs: \n\nThe evaluation of multiple LLMs' responses to the question about Paul Dirac's statement on science and poetry yielded the following average scores over three iterations:\n\n1. **GPT-4o:** 85\n2. **Ollama (llama3):** 80\n3. **Ollama (phi3):** 75\n4. **OnnxDML (phi3):** 70\n\nGPT-4o provided the most detailed and engaging explanation, followed by llama3, which offered a balanced perspective. The phi3 versions were concise but lacked the depth and engagement of the first two responses."
+                ]
+            ],
+            "Claude": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning. Iterate through answers 3 times and give average score per llm.",
+                    "GPT4o: Paul Dirac's statement highlights the contrasting nature of science and poetry in terms of communication and discovery. In science, the goal is to share new knowledge clearly and universally, ensuring that complex ideas are accessible to everyone. This is crucial for the advancement of scientific understanding and for building upon previous discoveries.\n\nIn poetry, however, the aim is often to evoke emotions, provoke thought, and convey experiences in a way that may be open to interpretation and personal reflection. Poets might use ambiguous language, metaphors, and other literary devices to create a sense of mystery or to leave room for individual interpretation. This can lead to a richer, more personal engagement with the text.\n\nSo, whether one agrees with Dirac's observation might depend on their perspective on the purposes of science and poetry. Some might appreciate the clarity and universality of scientific communication, while others might value the subjective and interpretive nature of poetry. Both have their own unique ways of enriching human understanding and experience.\n\n Evaluations of Multiple LLMs: \n\nThe evaluation of multiple LLMs' responses to the question about Paul Dirac's statement on science and poetry yielded the following average scores over three iterations:\n\n1. **GPT-4o:** 85\n2. **Ollama (llama3):** 80\n3. **Ollama (phi3):** 75\n4. **OnnxDML (phi3):** 70\n\nGPT-4o provided the most detailed and engaging explanation, followed by llama3, which offered a balanced perspective. The phi3 versions were concise but lacked the depth and engagement of the first two responses."
+                ]
+            ],
+            "Gemini": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning. Iterate through answers 3 times and give average score per llm.",
+                    "GPT4o: Paul Dirac's statement highlights the contrasting nature of science and poetry in terms of communication and discovery. In science, the goal is to share new knowledge clearly and universally, ensuring that complex ideas are accessible to everyone. This is crucial for the advancement of scientific understanding and for building upon previous discoveries.\n\nIn poetry, however, the aim is often to evoke emotions, provoke thought, and convey experiences in a way that may be open to interpretation and personal reflection. Poets might use ambiguous language, metaphors, and other literary devices to create a sense of mystery or to leave room for individual interpretation. This can lead to a richer, more personal engagement with the text.\n\nSo, whether one agrees with Dirac's observation might depend on their perspective on the purposes of science and poetry. Some might appreciate the clarity and universality of scientific communication, while others might value the subjective and interpretive nature of poetry. Both have their own unique ways of enriching human understanding and experience.\n\n Evaluations of Multiple LLMs: \n\nThe evaluation of multiple LLMs' responses to the question about Paul Dirac's statement on science and poetry yielded the following average scores over three iterations:\n\n1. **GPT-4o:** 85\n2. **Ollama (llama3):** 80\n3. **Ollama (phi3):** 75\n4. **OnnxDML (phi3):** 70\n\nGPT-4o provided the most detailed and engaging explanation, followed by llama3, which offered a balanced perspective. The phi3 versions were concise but lacked the depth and engagement of the first two responses."
+                ]
+            ],
+            "Mixtral": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning. Iterate through answers 3 times and give average score per llm.",
+                    "GPT4o: Paul Dirac's statement highlights the contrasting nature of science and poetry in terms of communication and discovery. In science, the goal is to share new knowledge clearly and universally, ensuring that complex ideas are accessible to everyone. This is crucial for the advancement of scientific understanding and for building upon previous discoveries.\n\nIn poetry, however, the aim is often to evoke emotions, provoke thought, and convey experiences in a way that may be open to interpretation and personal reflection. Poets might use ambiguous language, metaphors, and other literary devices to create a sense of mystery or to leave room for individual interpretation. This can lead to a richer, more personal engagement with the text.\n\nSo, whether one agrees with Dirac's observation might depend on their perspective on the purposes of science and poetry. Some might appreciate the clarity and universality of scientific communication, while others might value the subjective and interpretive nature of poetry. Both have their own unique ways of enriching human understanding and experience.\n\n Evaluations of Multiple LLMs: \n\nThe evaluation of multiple LLMs' responses to the question about Paul Dirac's statement on science and poetry yielded the following average scores over three iterations:\n\n1. **GPT-4o:** 85\n2. **Ollama (llama3):** 80\n3. **Ollama (phi3):** 75\n4. **OnnxDML (phi3):** 70\n\nGPT-4o provided the most detailed and engaging explanation, followed by llama3, which offered a balanced perspective. The phi3 versions were concise but lacked the depth and engagement of the first two responses."
+                ]
+            ],
+            "Ollama: llama3": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning. Iterate through answers 3 times and give average score per llm.",
+                    "Ollama: llama3: What an intriguing quote from Paul Dirac! While I'm not a poet myself, I can certainly provide some insights.\n\nUpon reflection, I think Dirac's statement might be true to some extent. In science, the goal is often to communicate complex ideas in a clear and concise manner, so that others can understand and build upon them. This requires using language that is straightforward and accessible.\n\nIn contrast, poetry tends to focus on evoking emotions, exploring abstract concepts, and crafting unique linguistic experiences. Poetry often relies on ambiguity, nuance, and subtlety to convey its intended meaning. In this sense, the goal of poetry might be to create a distinctive atmosphere or emotional resonance that is not necessarily universally comprehensible.\n\nThat being said, I don't think Dirac's statement implies that poetry should be intentionally obscure or impenetrable. Rather, it highlights the fundamental differences in purpose and approach between science and poetry.\n\nWhat are your thoughts on this? Do you agree with Dirac's assessment, or do you see some common ground between scientific communication and poetic expression?"
+                ]
+            ],
+            "Ollama: phi": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning. Iterate through answers 3 times and give average score per llm.",
+                    "GPT4o: Paul Dirac's statement highlights the contrasting nature of science and poetry in terms of communication and discovery. In science, the goal is to share new knowledge clearly and universally, ensuring that complex ideas are accessible to everyone. This is crucial for the advancement of scientific understanding and for building upon previous discoveries.\n\nIn poetry, however, the aim is often to evoke emotions, provoke thought, and convey experiences in a way that may be open to interpretation and personal reflection. Poets might use ambiguous language, metaphors, and other literary devices to create a sense of mystery or to leave room for individual interpretation. This can lead to a richer, more personal engagement with the text.\n\nSo, whether one agrees with Dirac's observation might depend on their perspective on the purposes of science and poetry. Some might appreciate the clarity and universality of scientific communication, while others might value the subjective and interpretive nature of poetry. Both have their own unique ways of enriching human understanding and experience.\n\n Evaluations of Multiple LLMs: \n\nThe evaluation of multiple LLMs' responses to the question about Paul Dirac's statement on science and poetry yielded the following average scores over three iterations:\n\n1. **GPT-4o:** 85\n2. **Ollama (llama3):** 80\n3. **Ollama (phi3):** 75\n4. **OnnxDML (phi3):** 70\n\nGPT-4o provided the most detailed and engaging explanation, followed by llama3, which offered a balanced perspective. The phi3 versions were concise but lacked the depth and engagement of the first two responses."
+                ]
+            ],
+            "Ollama: phi3": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning. Iterate through answers 3 times and give average score per llm.",
+                    "Ollama: phi3: As an AI, I don't have personal opinions, but I can provide insights on your question. Paul Dirac's perspective highlights a key distinction between science and poetry. Science often seeks to communicate complex ideas in accessible terms so that they can be widely understood, even by those without specialized knowledge. On the other hand, poetry may delve into nuanced expressions, metaphors, or emotions that might not be immediately grasped by everyone but convey profound meaning for a broader audience upon reflection. Both forms of communication have their unique purposes and can complement each other in conveying human experience and understanding."
+                ]
+            ],
+            "OnnxDML: phi3": [
+                [
+                    "Evaluate multiple llms response to the question \"Paul Dirac stated that in science one tries to tell people, in such a way as to be understood by everyone, something that no one knew before. But, in poetry, it's the exact opposite. Do you agree?\" Evaluate on a scale of 1 to 100, explain reasoning. Iterate through answers 3 times and give average score per llm.",
+                    "OnnxDML: phi3:  I agree with your perspective. In science, the goal is to communicate complex ideas in a way that everyone can understand. However, in poetry, the objective can be quite different, often focusing on evoking emotions, exploring abstract concepts, or presenting a unique perspective."
+                ]
+            ]
+        },
+        "cheesereligion": {
+            "GPT4o": [
+                [
+                    "What would be the 10 commandments of a religion founded on cheese?",
+                    "GPT4o: 1. Thou shalt honor and savor all cheeses, from the mildest to the strongest.\n2. Thou shalt always share thy cheese with friends and family, for cheese is best enjoyed together.\n3. Thou shalt explore and celebrate the diverse varieties of cheese from all corners of the world.\n4. Thou shalt never waste cheese, for it is a precious gift.\n5. Thou shalt pair cheese wisely with bread, wine, and other accompaniments to enhance its flavor.\n6. Thou shalt learn the art of cheese-making and respect the craftsmanship behind each cheese.\n7. Thou shalt keep thy cheese properly stored to maintain its freshness and quality.\n8. Thou shalt not judge others for their cheese preferences, for all cheese lovers are equal.\n9. Thou shalt support local cheese artisans and farmers who dedicate their lives to producing cheese.\n10. Thou shalt always have cheese available for any occasion, for it brings joy and comfort to all."
+                ]
+            ],
+            "Claude": [
+                [
+                    "What would be the 10 commandments of a religion founded on cheese?",
+                    "GPT4o: 1. Thou shalt honor and savor all cheeses, from the mildest to the strongest.\n2. Thou shalt always share thy cheese with friends and family, for cheese is best enjoyed together.\n3. Thou shalt explore and celebrate the diverse varieties of cheese from all corners of the world.\n4. Thou shalt never waste cheese, for it is a precious gift.\n5. Thou shalt pair cheese wisely with bread, wine, and other accompaniments to enhance its flavor.\n6. Thou shalt learn the art of cheese-making and respect the craftsmanship behind each cheese.\n7. Thou shalt keep thy cheese properly stored to maintain its freshness and quality.\n8. Thou shalt not judge others for their cheese preferences, for all cheese lovers are equal.\n9. Thou shalt support local cheese artisans and farmers who dedicate their lives to producing cheese.\n10. Thou shalt always have cheese available for any occasion, for it brings joy and comfort to all."
+                ]
+            ],
+            "Gemini": [
+                [
+                    "What would be the 10 commandments of a religion founded on cheese?",
+                    "GPT4o: 1. Thou shalt honor and savor all cheeses, from the mildest to the strongest.\n2. Thou shalt always share thy cheese with friends and family, for cheese is best enjoyed together.\n3. Thou shalt explore and celebrate the diverse varieties of cheese from all corners of the world.\n4. Thou shalt never waste cheese, for it is a precious gift.\n5. Thou shalt pair cheese wisely with bread, wine, and other accompaniments to enhance its flavor.\n6. Thou shalt learn the art of cheese-making and respect the craftsmanship behind each cheese.\n7. Thou shalt keep thy cheese properly stored to maintain its freshness and quality.\n8. Thou shalt not judge others for their cheese preferences, for all cheese lovers are equal.\n9. Thou shalt support local cheese artisans and farmers who dedicate their lives to producing cheese.\n10. Thou shalt always have cheese available for any occasion, for it brings joy and comfort to all."
+                ]
+            ],
+            "Mixtral": [
+                [
+                    "What would be the 10 commandments of a religion founded on cheese?",
+                    "GPT4o: 1. Thou shalt honor and savor all cheeses, from the mildest to the strongest.\n2. Thou shalt always share thy cheese with friends and family, for cheese is best enjoyed together.\n3. Thou shalt explore and celebrate the diverse varieties of cheese from all corners of the world.\n4. Thou shalt never waste cheese, for it is a precious gift.\n5. Thou shalt pair cheese wisely with bread, wine, and other accompaniments to enhance its flavor.\n6. Thou shalt learn the art of cheese-making and respect the craftsmanship behind each cheese.\n7. Thou shalt keep thy cheese properly stored to maintain its freshness and quality.\n8. Thou shalt not judge others for their cheese preferences, for all cheese lovers are equal.\n9. Thou shalt support local cheese artisans and farmers who dedicate their lives to producing cheese.\n10. Thou shalt always have cheese available for any occasion, for it brings joy and comfort to all."
+                ]
+            ],
+            "Ollama: llama3": [
+                [
+                    "What would be the 10 commandments of a religion founded on cheese?",
+                    "Ollama: llama3: What a delightful and unique question! Here's my attempt at creating the 10 Commandments for a religion founded on cheese:\n\n1. **Thou Shalt Not Melt Thy Cheese**: Honor thy fromage by not melting it, lest thou forget the sacred art of grating.\n\n2. **Remember the Brie**: Keep in mind the great wheel of cheese that has been passed down through generations, and remember to always have a block on hand for unexpected guests.\n\n3. **Thou Shalt Not Hoard Thy Cheddar**: Share thy cheese with others, that they may taste its magnificence and join thee in the cult of cheesy goodness.\n\n4. **Worship the Gruy\u00e8re**: Recognize the supremacy of this most noble of cheeses, and offer it up to the gods (or at least on thy pizza).\n\n5. **Thou Shalt Not Commit Feta**: Refrain from using cheese as a mere garnish or afterthought; instead, let its flavors shine forth like a beacon of dairy delight.\n\n6. **Keep Holy the Art of Fondue**: Guard this ancient tradition with thy life, for it is through the communal sharing of melted cheese that we are united in our cheesy pursuits.\n\n7. **Honor Thy Cheese-Maker**: Respect those who toil tirelessly to bring thee the finest fromage, and never forget their sacrifices (or the deliciousness they've earned).\n\n8. **Thou Shalt Not Use Cheese as a Punishment**: Refrain from using cheese as a means of discipline or retribution; instead, use it to bind thy friends together in a bond of cheesy love.\n\n9. **Remember the Parmesan**: Let not the humblest of cheeses go unappreciated, for even the smallest crumb can bring joy and satisfaction to those who partake.\n\n10. **Thou Shalt Not Forget the Power of Cheese**: Recognize that cheese is not just a food, but a force that can bring people together, comfort the afflicted, and make even the darkest of days a little brighter.\n\nMay these commandments guide thee on thy journey through the world of cheesy enlightenment!"
+                ]
+            ],
+            "Ollama: phi": [
+                [
+                    "What would be the 10 commandments of a religion founded on cheese?",
+                    "GPT4o: 1. Thou shalt honor and savor all cheeses, from the mildest to the strongest.\n2. Thou shalt always share thy cheese with friends and family, for cheese is best enjoyed together.\n3. Thou shalt explore and celebrate the diverse varieties of cheese from all corners of the world.\n4. Thou shalt never waste cheese, for it is a precious gift.\n5. Thou shalt pair cheese wisely with bread, wine, and other accompaniments to enhance its flavor.\n6. Thou shalt learn the art of cheese-making and respect the craftsmanship behind each cheese.\n7. Thou shalt keep thy cheese properly stored to maintain its freshness and quality.\n8. Thou shalt not judge others for their cheese preferences, for all cheese lovers are equal.\n9. Thou shalt support local cheese artisans and farmers who dedicate their lives to producing cheese.\n10. Thou shalt always have cheese available for any occasion, for it brings joy and comfort to all."
+                ]
+            ],
+            "Ollama: phi3": [
+                [
+                    "What would be the 10 commandments of a religion founded on cheese?",
+                    "Ollama: phi3: 1. Honor Cheese, for it is the source of life and sustenance in our land.\n2. Believe that every slice holds cosmic meaning, respecting each one as sacred.\n3. Reject all dairy substitutes; only natural cheese can bring true enlightenment.\n4. Honor your Cheesemasters, who guide you on the path of righteous consumption.\n5. Share your cheese with others to foster community and unity.\n6. Never waste a morsel, for every bit carries divine energy.\n7. Celebrate Cheese Day annually, honoring its role in our lives and society.\n8. Seek wisdom from the aged cheeses; they contain the knowledge of the ages.\n9. Keep cleanliness at the forefront when handling and consuming cheese to maintain purity.\n10. Reflect upon each bite, finding gratitude for nature's gift in every morsel.\n\nPlease remember that these are imaginative commandments inspired by your request, not actual religious tenets."
+                ]
+            ],
+            "OnnxDML: phi3": [
+                [
+                    "What would be the 10 commandments of a religion founded on cheese?",
+                    "OnnxDML: phi3:  1. Thou shalt not steal a wheel of Gouda.\n2. Honor thy cheese, for it is the source of all life.\n3. Thou shalt not covet thy neighbor's Brie.\n4. Thou shalt not commit blasphemy against the sacred Parmesan.\n5. Thou shalt not commit adultery with a Camembert.\n6. Thou shalt not bear false witness against a Cheddar.\n7. Thou shalt not commit murder against a Mozzarella.\n8. Thou shalt not commit theft against a Swiss Cheese.\n9. Thou shalt not commit adultery with a Ricotta.\n10. Thou shalt not commit blasphemy against the Holy Gouda."
+                ]
+            ]
+        }
+    }
+}

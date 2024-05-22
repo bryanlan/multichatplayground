@@ -42,8 +42,8 @@ with gr.Blocks() as demo:
                         model_chatbots.append(model_chatbot)
 
     # Event handlers
-
-    ThreadText = ChatBot(full_path = "savedChats.json", json_object = {},full_json_object = {}, name_text_box=activeThread,
+    jsonObject = {}
+    ThreadText = ChatBot(full_path = "savedChats.json", json_object = jsonObject,full_json_object = jsonObject, name_text_box=activeThread,
                          dropdown = thread_choice, clear_button= clear_chat, save_button = save_button, remove_button = remove_button,
                          primary_chatbot=chatbot,secondary_chatbots=model_chatbots, model_specs = model_specs, model_choice=model_choice, 
                          temp_slider=temp_slider,perf_label=perfLabel, msg = msg,sys_msg_text= "System: You are a helpful assistant")

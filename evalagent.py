@@ -27,7 +27,25 @@ llm_results = None
 formatted_label_str = ""
 modelInfo = {}
 
-async def grade_multiple_llms_response_single_async(prompt: str, evalCriteria: str) -> dict:
+def concatenate_dict_pairs(d, result=None):
+    if result is None:
+        result = []
+    
+    if isinstance(d, str):
+        result.append(d)
+        result.append('\n')
+    elif isinstance(d, dict):
+        for key, value in d.items():
+            if isinstance(value, dict):
+                result.append(f"{key}:")
+                concatenate_dict_pairs(value, result)
+            else:
+                result.append(f"{key}:{value}")
+            result.append('\n')  # Add a newline after each value
+
+    return ''.join(result).strip()  # Join and strip the trailing newline
+
+async def grade_multiple_llms_response_single_async(prompt: str, evalCriteria: str) -> str:
     global tool_used, modelInfo, llm_results
 
     formatted_chatHistory = [[(prompt,"")] for model_name in modelInfo['model_names']]
@@ -35,33 +53,51 @@ async def grade_multiple_llms_response_single_async(prompt: str, evalCriteria: s
     # execute the question on all LLMs
     llm_results, formatted_label_str = await execute_llms(
                 modelInfo['model_names'], modelInfo['model_specs'], modelInfo['temperature'], "You are a helpful assistant", formatted_chatHistory)
+    
+    if evalCriteria:
+        evalPrompt =  evalCriteria
+    else:
+        evalPrompt = "Evaluate these multiple LLM responses on a scale of 1 to 100, explaining your reasoning. "
 
-    llm_response = copy.deepcopy(llm_results)
+    formatted_chatHistory = [[(evalPrompt + concatenate_dict_pairs(llm_results),)]]
+    llm_eval, formatted_label_str = await execute_llms(
+                [modelInfo['model_names'][0]], modelInfo['model_specs'], modelInfo['temperature'], "You evaluate LLM response quality.", formatted_chatHistory)
+
+
     tool_used = True
-    return llm_response
-
+    return llm_eval
 
 
 @tool
-def grade_multiple_llms_response_multiple(prompt: str, numberEval: int, evalCriteria: str) -> dict:
+def grade_multiple_llms_response_multiple(prompt: str, numberEval: int, evalCriteria: str) -> str:
     
     '''ONLY use when asked to evaluate multiple LLMs reponses to a question multiple times (must be a specific number >1 ) by nested looping through the responses and grading them. Inputs: 1) prompt: str - the question to evaluate 
     2) numberEval: int - the number of times to ask the question to multiple LLMs, cannot be 1 3) evalCritera: optional str the criteria defined for the evaluation, if specified. 
-    Outputs: 1) Dictionary containing keys for each LLM with each key having a value consisting of a list of evaluation scores'''
+    Outputs: 1) String containing the scores for each iteration of asking the question'''
     global tool_used
     tool_used = True
-    llmResponses = []
+    print("Entering grade response multiple, Prompt:" + prompt+ ". criteria:" + evalCriteria + ". Iterations:"+str(numberEval))
+    if evalCriteria:
+        evalPrompt =  evalCriteria
+    else:
+        evalPrompt = "Evaluate these multiple LLM responses on a scale of 1 to 100, explaining your reasoning. "
+    llmResponses = ""
     for i in range(numberEval - 1):
-        llmResponses.append(grade_multiple_llms_response_single(prompt))
-    evalInfo = {'LLM_Claude': [6, 7, 8, 9], 'LLM_Ollamallama3': [7, 7, 7, 7], 'LLM_OllamaPhi3': [4, 5, 6, 7], 'LLM_OnnxDMLPhi3': [5, 6, 7, 8]}
-    return evalInfo
+        loop = asyncio.get_event_loop()
+        response=loop.run_until_complete(grade_multiple_llms_response_single_async(prompt, evalPrompt))
+        if isinstance(response, dict):
+            response = concatenate_dict_pairs(response)
+        llmResponses+=response
+    
+
+    return llmResponses
 
 @tool
 def grade_multiple_llms_response_single(prompt: str, evalCriteria: str) -> dict:
     '''Evaluates multiple LLM responses to a question by getting the LLM responses. Inputs: 1) prompt: str - the question and responses from the multiple LLMs 
     evalCritera: optional str the criteria defined for the evaluation, if specified. 
     Outputs: 1) evalInfo: dict - keys are llm model names, value are responses which AI will then grade according to evalCriteria input parameter'''
-
+    print("Entering grade response single, Prompt:" + prompt+ ". Criteria:" + evalCriteria)
     loop = asyncio.get_event_loop()
     return loop.run_until_complete(grade_multiple_llms_response_single_async(prompt, evalCriteria))
 
@@ -137,23 +173,7 @@ class LangChainAgent:
         result = self.agent_executor.invoke({"input": user_input})
         return result
     
-    def concatenate_dict_pairs(self, d, result=None):
-        if result is None:
-            result = []
-        
-        if isinstance(d, str):
-            result.append(d)
-            result.append('\n')
-        elif isinstance(d, dict):
-            for key, value in d.items():
-                if isinstance(value, dict):
-                    result.append(f"{key}:")
-                    self.concatenate_dict_pairs(value, result)
-                else:
-                    result.append(f"{key}:{value}")
-                result.append('\n')  # Add a newline after each value
-    
-        return ''.join(result).strip()  # Join and strip the trailing newline
+   
 
     async def run_agent_and_llms(self, model_names, model_specs, temperature, sys_msg, cleaned_chat_histories, user_input):
         global tool_used, llm_results, formatted_label_str, modelInfo
@@ -166,7 +186,7 @@ class LangChainAgent:
         
         if tool_used:
             # pad the results so that the actual responses will show up for their respective LLMs, and the eval will show for the main LLM.
-            results_simple = {model_name: llm_results[model_name] +  ("\n\n Evaluations of Multiple LLMs: \n\n" + self.concatenate_dict_pairs(agent_result['output']) if model_name == first_model else '') for model_name in model_names}
+            results_simple = {model_name: llm_results[model_name] +  ("\n\n Evaluations of Multiple LLMs: \n\n" + concatenate_dict_pairs(agent_result['output']) if model_name == first_model else '') for model_name in model_names}
             return results_simple, ""
 
         # If the agent did not use any tools, run execute_llms
