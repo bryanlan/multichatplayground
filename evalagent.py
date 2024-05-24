@@ -179,7 +179,12 @@ class LangChainAgent:
         global tool_used, llm_results, formatted_label_str, modelInfo
         first_model = model_names[0]
         modelInfo = {'model_names':model_names, 'model_specs':model_specs, 'temperature': temperature, 'sys_msg':sys_msg}
-        
+        if model_specs[first_model]["is_local"]:
+            # If the first model is local, run execute_llms directly and return the results
+            results, formatted_label_str = await execute_llms(
+                model_names, model_specs, temperature, sys_msg, cleaned_chat_histories
+            )
+            return results, formatted_label_str
         tool_used = False
 
         agent_result = self.invoke(user_input)

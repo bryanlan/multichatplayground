@@ -96,4 +96,16 @@ model_specs = {
             "output": 0.000  # $0.002 per 1k tokens
         }
     },
+     "TorchDML: phi3": {
+        "is_local":True,
+        "supports_agents":False,
+        "is_used": True,  # Add this line and set to True or False as needed,
+        "maximum_context_length_tokens": 2048,
+        "maximum_output_tokens": 2048,
+        "friendly_name":"TorchDML: phi3",
+        "cost_per_token": {
+            "input": 0.000,  # $0.001 per 1k tokens
+            "output": 0.000  # $0.002 per 1k tokens
+        }
+    },
 }

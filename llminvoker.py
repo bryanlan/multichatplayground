@@ -170,6 +170,9 @@ def chat_bot_backend(conversation, model_name, max_context_tokens=2000, max_outp
     elif model_name.startswith("OnnxDML:"):
         inModel = model_name
         llm = LocalModelInterface(model_type=inModel,temperature=temperatureIn, max_output_tokens=max_output_tokens )
+    elif model_name.startswith("TorchDML:"):
+        inModel = model_name
+        llm = LocalModelInterface(model_type=inModel,temperature=temperatureIn, max_output_tokens=max_output_tokens )
 
     else:
         raise ValueError(f"Unsupported model: {model_name}")

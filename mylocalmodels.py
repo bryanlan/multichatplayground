@@ -4,6 +4,11 @@ from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
 from langchain.schema import LLMResult, Generation
 from dmlphi3.phi3dml import generate_response as dmlphi3response
+from dmltorch.dmltorch import LLM_Model
+import sys
+import os
+# Ensure subfolder is in the Python path
+sys.path.append(os.path.join(os.path.dirname(__file__), 'dmltorch'))
 
 class LocalModelInterface(LLM):
     model_type: str = Field(default="llmt1")
@@ -13,6 +18,8 @@ class LocalModelInterface(LLM):
     def _call(self, prompt: str, stop: Optional[List[str]] = None) -> str:
         if self.model_type == "OnnxDML: phi3":
             response = self._local_OnnxDMLPhi3(prompt)
+        elif self.model_type == "TorchDML: phi3":
+            response = self._local_TorchDMLPhi3(prompt)
         elif self.model_type == "local-model2":
             response = self._local_model2(prompt)
         else:
@@ -25,6 +32,27 @@ class LocalModelInterface(LLM):
         # ...
         response = dmlphi3response(prompt, self.max_output_tokens, self.temperature)
         return response
+
+    def _local_TorchDMLPhi3(self, prompt: str) -> str:
+        # Implementation of local model 1
+        # Use self.max_output_tokens and self.temperature as needed
+        llm_model = LLM_Model(
+            prompt="Hello",
+            interactive=False,
+            num_samples=1,
+            max_new_tokens=self.max_output_tokens,
+            top_k=200,
+            temperature=self.temperature,
+        )
+        llm_model.load_model()
+        
+        # Call the chat method and accumulate the full response
+        response = llm_model.chat(prompt, "")
+        total_msg = ""
+        for msg in response:
+            total_msg += msg
+            
+        return total_msg
 
     def _local_model2(self, prompt: str) -> str:
         # Implementation of local model 2

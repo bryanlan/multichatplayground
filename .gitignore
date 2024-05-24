@@ -11,3 +11,7 @@ agentsample.py
 agentparsing.py
 evalchainsample.py
 boneyard.py
+dmlphi3/
+checkpoints/
+dmltorch/
+!dmltorch/dmltorch.py
