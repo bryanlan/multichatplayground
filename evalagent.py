@@ -3,6 +3,9 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.schema import LLMResult
+from langchain.memory import ConversationTokenBufferMemory, ConversationBufferMemory
+from langchain.schema import HumanMessage, AIMessage, BaseMessage
+
 from llminvoker import execute_llms, clean_chat_history
 import keys
 from typing import Any, Dict, List
@@ -103,12 +106,14 @@ def grade_multiple_llms_response_single(prompt: str, evalCriteria: str) -> dict:
 
 
 class LangChainAgent:
-    def __init__(self):
+    def __init__(self, chat_history):
+        MAX_AGENT_TOKENS = 4000
         self.custom_handler = CustomHandler()
         self.tools = [
             grade_multiple_llms_response_multiple,
             grade_multiple_llms_response_single
         ]
+        self.chat_history = chat_history
 
         self.system =  '''Respond to the human as helpfully and accurately as possible. You have access to the following tools:
             {tools}
@@ -162,15 +167,28 @@ class LangChainAgent:
             callbacks=[self.custom_handler]
         )
         self.agent = create_structured_chat_agent(self.chat, self.tools, self.prompt)
+         # Initialize the conversation memory
+        self.memory = ConversationBufferMemory(max_token_limit=MAX_AGENT_TOKENS, memory_key="chat_history", return_messages=True) # llm=self.chat, 
+        #self.chat_history = [("What is your name?", "My name is Mr. AI"),("placeholder",)]
+        # Add the conversation history to the memory
+        for user_input, agent_response in self.chat_history[:-1]:
+            self.memory.save_context({"input": user_input}, {"output": agent_response})
+
         self.agent_executor = AgentExecutor(
             agent=self.agent,
             tools=self.tools,
             verbose=False,
-            return_intermediate_steps=False,
+            memory = self.memory,max_iterations=5, 
+            max_execution_time=1000
+       
         )
        
     def invoke(self, user_input: str) -> str:
-        result = self.agent_executor.invoke({"input": user_input})
+        chat_history = self.memory.buffer_as_messages
+        assert isinstance(chat_history, list), "chat_history is not a list"
+        assert all(isinstance(msg, (HumanMessage, AIMessage)) for msg in chat_history), "chat_history contains invalid message types"
+ 
+        result = self.agent_executor.invoke({"input": user_input, "chat_history":chat_history})
         return result
     
    

@@ -22,6 +22,7 @@ def remove_prefix(text, prefix="Ollama: "):
     return text
 
 def clean_chat_history(chat_history, model_specs):
+    # removes inserted LLM prefixes (for readability) from the chat history, returns list of 2 tuples (human, ai)
     new_chat_history = []
     for message, response in chat_history:
         for model_name, specs in model_specs.items():
@@ -34,6 +35,8 @@ def clean_chat_history(chat_history, model_specs):
 
 
 async def execute_llms(model_names, model_specs, temperature, sys_msg, cleaned_chat_histories):
+    # cleaned chat histories is a list of lists, with each element of outer list corresponding to an element of the model_names list (in order)
+    # inner list contains 2-tuples (human, ai)
     futures = {}
     first_local_model_handled = False
 

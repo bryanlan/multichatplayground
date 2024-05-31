@@ -4,7 +4,12 @@ from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.llms.base import LLM
 from langchain.schema import LLMResult, Generation
 from dmlphi3.phi3dml import generate_response as dmlphi3response
-from dmltorch.dmltorch import LLM_Model
+try:
+    from dmltorch.dmltorch import LLM_Model
+except ImportError:
+    # Handle the import error or pass if you want to ignore it
+    print("Warning: LLM_Model could not be imported. This code path will be skipped.")
+
 import sys
 import os
 # Ensure subfolder is in the Python path

@@ -311,7 +311,7 @@ class ChatBot(BaseBox):
             user_input = message
 
               # Instantiate LangChainAgent and call run_agent_and_llms
-            agent = LangChainAgent()
+            agent = LangChainAgent(new_chat_history)
             results, formatted_label_str = asyncio.run(agent.run_agent_and_llms(
                 model_names,
                 self.model_specs,
