@@ -5,13 +5,13 @@ from langchain_community.chat_models import ChatOllama
 from langchain.prompts.prompt import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from mylocalmodels import LocalModelInterface
+# from mylocalmodels import LocalModelInterface  # Commented out due to missing onnxruntime_genai
 
 from langchain.memory import ConversationTokenBufferMemory
 from langchain.chains import ConversationChain
 import keys
 from langchain_community.llms import HuggingFaceTextGenInference
-from gputimekeeper import GPUTimeKeeper
+# from gputimekeeper import GPUTimeKeeper  # Commented out due to GPU dependencies
 import concurrent.futures
 
 
@@ -170,12 +170,12 @@ def chat_bot_backend(conversation, model_name, max_context_tokens=2000, max_outp
     elif model_name.startswith("Ollama:"):
         inModel = remove_prefix(model_name)
         llm = ChatOllama(model=inModel,temperature=temperatureIn )
-    elif model_name.startswith("OnnxDML:"):
-        inModel = model_name
-        llm = LocalModelInterface(model_type=inModel,temperature=temperatureIn, max_output_tokens=max_output_tokens )
-    elif model_name.startswith("TorchDML:"):
-        inModel = model_name
-        llm = LocalModelInterface(model_type=inModel,temperature=temperatureIn, max_output_tokens=max_output_tokens )
+    # elif model_name.startswith("OnnxDML:"):
+    #     inModel = model_name
+    #     llm = LocalModelInterface(model_type=inModel,temperature=temperatureIn, max_output_tokens=max_output_tokens )
+    # elif model_name.startswith("TorchDML:"):
+    #     inModel = model_name
+    #     llm = LocalModelInterface(model_type=inModel,temperature=temperatureIn, max_output_tokens=max_output_tokens )
 
     else:
         raise ValueError(f"Unsupported model: {model_name}")
@@ -199,10 +199,11 @@ def chat_bot_backend(conversation, model_name, max_context_tokens=2000, max_outp
 
     # start tje g[]
     # Generate the agent's response
-    aGPUTime =  GPUTimeKeeper()
-    aGPUTime.start_timer(GPU_UTILIZATION_THRESHOLD)
+    # aGPUTime =  GPUTimeKeeper()  # Commented out due to GPU dependencies
+    # aGPUTime.start_timer(GPU_UTILIZATION_THRESHOLD)
     agent_response = conversation_chain.predict(input=latest_user_input)
-    gpuTime = aGPUTime.stop_timer()
+    # gpuTime = aGPUTime.stop_timer()
+    gpuTime = 0  # Default value since GPU timer is disabled
     tokenCount = llm.get_num_tokens(agent_response)
 
 

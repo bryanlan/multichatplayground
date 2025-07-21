@@ -3,6 +3,7 @@ import json
 
 from llminvoker import clean_chat_history  
 from evalagent import LangChainAgent
+from image_generator import ImageGenerator
 import gradio as gr
 import asyncio
 
@@ -140,7 +141,7 @@ class TextBox(BaseBox):
         return text, name
 
 class ChatBot(BaseBox):
-    def __init__(self,  primary_chatbot, secondary_chatbots, model_specs, model_choice, temp_slider,perf_label, msg, sys_msg_text, *args, **kwargs):
+    def __init__(self,  primary_chatbot, secondary_chatbots, model_specs, model_choice, temp_slider,perf_label, msg, sys_msg_text, generated_image=None, image_models_only=None, model_images=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.primary_chatbot = primary_chatbot
         self.secondary_chatbots = secondary_chatbots
@@ -151,6 +152,10 @@ class ChatBot(BaseBox):
         self.message_selected = gr.State(None)
         self.msg = msg
         self.perf_label = perf_label
+        self.generated_image = generated_image
+        self.image_models_only = image_models_only
+        self.model_images = model_images or []
+        self.image_generator = ImageGenerator()
 
     
        
@@ -176,8 +181,16 @@ class ChatBot(BaseBox):
         self.remove_button.click(self._remove_text, [self.name_text_box], [self.dropdown,self.name_text_box, self.primary_chatbot, *self.secondary_chatbots])
 
         self.dropdown.change(self.load_text, [self.dropdown], [self.name_text_box, self.primary_chatbot, *self.secondary_chatbots])
+        
+        # Determine outputs based on whether we have image components
+        outputs = [self.msg, self.primary_chatbot, self.message_selected,self.perf_label, *self.secondary_chatbots]
+        if self.generated_image is not None:
+            outputs.append(self.generated_image)
+        if self.model_images:
+            outputs.extend(self.model_images)
+            
         self.msg.submit(self._respond,[self.msg, self.primary_chatbot, self.message_selected, self.model_choice, self.temp_slider, self.perf_label,*self.secondary_chatbots],
-                        [self.msg, self.primary_chatbot, self.message_selected,self.perf_label, *self.secondary_chatbots])
+                        outputs)
 
         self.primary_chatbot.select(self._save_selected_message, None, [self.msg, self.message_selected])
   
@@ -297,6 +310,10 @@ class ChatBot(BaseBox):
  
 
     def _respond(self, message, chat_history, message_selected, model_names, temp_slider, perf_label, *model_chatbots):
+        generated_image_output = None
+        model_generated_images = {}  # Initialize this early to avoid NameError
+        image_models = []  # Initialize this early to avoid NameError
+        
         if message_selected is None:
             chat_history.append((message, ""))
             for model_chatbot in model_chatbots:
@@ -310,28 +327,86 @@ class ChatBot(BaseBox):
             
             user_input = message
 
-              # Instantiate LangChainAgent and call run_agent_and_llms
-            agent = LangChainAgent(new_chat_history)
-            results, formatted_label_str = asyncio.run(agent.run_agent_and_llms(
-                model_names,
-                self.model_specs,
-                temp_slider,
-                "System: " + self.sys_msg_text,
-                [new_chat_history] + new_model_chatbots,
-                user_input
-            ))
-            first_model = model_names[0]
-            chat_history[-1] = (chat_history[-1][0], self.model_specs[first_model]['friendly_name'] + ": " + results[first_model])
+            # Check if any selected models support image generation
+            image_models = [model for model in model_names if self.model_specs.get(model, {}).get('supports_images', False)]
+            
+            if image_models:
+                # Handle image generation
+                results = {}
+                formatted_label_str = "Image generation completed"
+                
+                # Generate images for each selected image model
+                for model_name in image_models:
+                    try:
+                        image, error = self.image_generator.generate_image(model_name, user_input)
+                        if image:
+                            # Save image to temp file for display
+                            temp_path = self.image_generator.save_image_to_temp(image, f"{model_name}_generated")
+                            results[model_name] = f"Image generated successfully!"
+                            model_generated_images[model_name] = temp_path
+                            generated_image_output = temp_path  # Use the last generated image for main display
+                        else:
+                            results[model_name] = f"Error generating image: {error}"
+                            model_generated_images[model_name] = None
+                    except Exception as e:
+                        results[model_name] = f"Image generation failed: {str(e)}"
+                        model_generated_images[model_name] = None
+                
+                # Update chat history with image generation results
+                first_model = image_models[0]
+                chat_history[-1] = (chat_history[-1][0], self.model_specs[first_model]['friendly_name'] + ": " + results[first_model])
 
-            for i, model_spec_key in enumerate(list(self.model_specs.keys())[0:], start=0):
-                if self.model_specs[model_spec_key]['is_used']:
-                    friendly_name = self.model_specs[model_spec_key]['friendly_name']
-                    if model_spec_key in results:
-                        model_chatbots[i][-1] = (model_chatbots[i][-1][0], friendly_name + ": " + results[model_spec_key])
-                    else:
-                        model_chatbots[i][-1] = (model_chatbots[i][-1][0], self.model_specs[first_model]['friendly_name'] + ": " + results[first_model])
+                for i, model_spec_key in enumerate(list(self.model_specs.keys())[0:], start=0):
+                    if self.model_specs[model_spec_key]['is_used']:
+                        friendly_name = self.model_specs[model_spec_key]['friendly_name']
+                        if model_spec_key in results:
+                            model_chatbots[i][-1] = (model_chatbots[i][-1][0], friendly_name + ": " + results[model_spec_key])
+                        else:
+                            model_chatbots[i][-1] = (model_chatbots[i][-1][0], "Not an image generation model")
+                
+            else:
+                # Handle regular text generation (existing logic)
+                agent = LangChainAgent(new_chat_history)
+                results, formatted_label_str = asyncio.run(agent.run_agent_and_llms(
+                    model_names,
+                    self.model_specs,
+                    temp_slider,
+                    "System: " + self.sys_msg_text,
+                    [new_chat_history] + new_model_chatbots,
+                    user_input
+                ))
+                first_model = model_names[0]
+                chat_history[-1] = (chat_history[-1][0], self.model_specs[first_model]['friendly_name'] + ": " + results[first_model])
 
-            return "", chat_history, message_selected, formatted_label_str, *model_chatbots
+                for i, model_spec_key in enumerate(list(self.model_specs.keys())[0:], start=0):
+                    if self.model_specs[model_spec_key]['is_used']:
+                        friendly_name = self.model_specs[model_spec_key]['friendly_name']
+                        if model_spec_key in results:
+                            model_chatbots[i][-1] = (model_chatbots[i][-1][0], friendly_name + ": " + results[model_spec_key])
+                        else:
+                            model_chatbots[i][-1] = (model_chatbots[i][-1][0], self.model_specs[first_model]['friendly_name'] + ": " + results[first_model])
+
+            # Prepare return values
+            return_values = ["", chat_history, message_selected, formatted_label_str, *model_chatbots]
+            if self.generated_image is not None:
+                return_values.append(generated_image_output)
+            
+            # Add individual model images if we have them
+            if self.model_images and image_models:
+                # Create array of images in the same order as model_specs
+                individual_images = []
+                for i, model_spec_key in enumerate(list(self.model_specs.keys())):
+                    if self.model_specs[model_spec_key]['is_used']:
+                        if model_spec_key in model_generated_images:
+                            individual_images.append(model_generated_images[model_spec_key])
+                        else:
+                            individual_images.append(None)
+                return_values.extend(individual_images)
+            elif self.model_images:
+                # No images generated, return None for all model image slots
+                return_values.extend([None] * len(self.model_images))
+            
+            return return_values
         else:
             for i, (msg_index, msg_text) in enumerate(chat_history):
                 iDelta = len(chat_history) - len(model_chatbots[0])
@@ -346,4 +421,12 @@ class ChatBot(BaseBox):
                             model_chatbot.pop(i-iDelta)
                     break
             message_selected = None
-            return "", chat_history, message_selected, perf_label, *model_chatbots
+            
+            # Prepare return values
+            return_values = ["", chat_history, message_selected, perf_label, *model_chatbots]
+            if self.generated_image is not None:
+                return_values.append(None)
+            if self.model_images:
+                return_values.extend([None] * len(self.model_images))
+            
+            return return_values
